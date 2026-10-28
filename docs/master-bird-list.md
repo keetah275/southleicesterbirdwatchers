@@ -10,8 +10,8 @@ to the next column. Wrapped names were joined; PDF font ligatures were converted
 to ordinary letters. Fulmar occurs in two columns and is retained at its first
 occurrence only. Trip dates, weather, X marks, and totals are not master data.
 
-Names and abbreviations are otherwise preserved. In particular, the source says
-**Girl Bunting**; this should be reviewed by the administrator before publication.
+Names and abbreviations are otherwise preserved. The source's **Girl Bunting**
+has been corrected to **Cirl Bunting**, as confirmed by the administrator.
 
 The list is seeded only when no master-list setting exists. Plugin upgrades do
 not replace an existing master list, and existing trip snapshots are unaffected.

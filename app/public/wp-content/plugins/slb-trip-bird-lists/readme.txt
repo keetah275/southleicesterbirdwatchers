@@ -52,7 +52,7 @@ is performed.
 A 263-bird master list is bundled from Potteric-Carr-Trip-List-2.pdf, supplied
 by the administrator. It is used only when no master list is configured.
 The repeated Fulmar entry is included once. Names and abbreviations are retained
-as supplied, including "Girl Bunting", which requires administrator review.
+as supplied, with "Girl Bunting" corrected to "Cirl Bunting" by the administrator.
 Trip-specific X marks are not imported. Database tables and settings are local
 to each WordPress installation; deployment does not copy development sightings.
 
