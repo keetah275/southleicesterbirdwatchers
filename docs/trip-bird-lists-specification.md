@@ -1,6 +1,7 @@
 # Trip bird lists — feature specification
 
-Status: proposal for review before implementation  
+Status: proposal for review before implementation
+
 Date: 28 October 2026
 
 ## Purpose
