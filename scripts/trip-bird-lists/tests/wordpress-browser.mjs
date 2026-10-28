@@ -21,7 +21,7 @@ const anonymous = await browser.newContext({viewport:{width:320,height:740}});
 const publicPage = await anonymous.newPage();
 try {
     await page.goto(fixture.settingsUrl);
-    assert.equal(await page.locator('#slb-master').inputValue(), '', 'Real master list remains empty');
+    assert.equal(await page.locator('#slb-master').inputValue(), fixture.masterNames.join('\n'), 'Real master list remains unchanged');
     const listUrl = new URL(fixture.editorUrl);
     listUrl.searchParams.set('event_id', '0');
     await page.goto(listUrl.href);
@@ -67,7 +67,7 @@ try {
     const denied = await anonymous.request.get(`${fixture.origin}/wp-json/slb-birds/v1/trips/${fixture.eventId}`);
     assert.equal(denied.status(),403);
     assert.deepEqual(errors, []);
-    console.log('Real WordPress browser checks passed: authenticated mobile admin, empty master settings, saved sightings, complete public report, private draft corrections, report updates, anonymous API denial, and print output.');
+    console.log('Real WordPress browser checks passed: authenticated mobile admin, preserved master settings, saved sightings, complete public report, private draft corrections, report updates, anonymous API denial, and print output.');
 } catch (error) {
     await page.screenshot({path:'/private/tmp/slb-wordpress-browser-failure.png',fullPage:true});
     console.error('Page:',page.url(),'Status:',await page.locator('#slb-status').textContent().catch(()=>'unavailable'));

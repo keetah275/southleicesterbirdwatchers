@@ -1,0 +1,263 @@
+Black Throat Diver
+Red Throat Diver
+Gt Northern Diver
+Little Grebe
+Gt Crested Grebe
+Red Neck Grebe
+Black Neck Grebe
+Fulmar
+Manx Shearwater
+Gannet
+Cormorant
+Shag
+Bittern
+Grey Heron
+Night Heron
+Squacco Heron
+Purple Heron
+Cattle Egret
+Little Egret
+Gt White Egret
+White Stork
+Glossy Ibis
+Spoonbill
+Bewick Swan
+Mute Swan
+Whooper Swan
+Bean Goose
+Pink Foot Goose
+White Front Goose
+Greylag
+Canada Goose
+Barnacle Goose
+Brent Goose
+Red Breasted Goose
+Egyptian Goose
+Shelduck
+Ruddy Shelduck
+Wood Duck
+Mandarin
+Wigeon
+Teal
+Green Wing Teal
+Gadwall
+Mallard
+Garganey
+Shoveler
+Pochard
+Ring Neck Duck
+Ferruginous Duck
+Tufted Duck
+Scaup
+Eider
+King Eider
+Harlequin Duck
+Long Tail Duck
+Common Scoter
+Surf Scoter
+Velvet Scoter
+Goldeneye
+Smew
+Red Br Merganser
+Goosander
+Ruddy Duck
+Pintail
+Red Crested Pochard
+Buzzard
+Honey Buzzard
+Rough Leg Buzzard
+Black Kite
+Red Kite
+Marsh Harrier
+Hen Harrier
+Pallid Harrier
+Montague Harrier
+Goshawk
+Sparrowhawk
+Golden Eagle
+White Tail Eagle
+Osprey
+Kestrel
+Red Foot Falcon
+Merlin
+Hobby
+Peregrine
+Black Grouse
+Red Grouse
+Ptarmigan
+Capercaillie
+Red Leg Partridge
+Grey Partridge
+Quail
+Pheasant
+Water Rail
+Corncrake
+Moorhen
+Coot
+Crane
+Gt Bustard
+Oystercatcher
+Black Wing Stilt
+Avocet
+Stone Curlew
+Ring Plover
+Little Ring Plover
+Dotterel
+Golden Plover
+Grey Plover
+Lapwing
+Knot
+Sanderling
+Little Stint
+Temmincks Stint
+Pectoral Sandpiper
+Curlew Sandpiper
+Purple Sandpiper
+Dunlin
+Ruff
+Snipe
+Jack Snipe
+Woodcock
+Bar Tail Godwit
+Black Tail Godwit
+Curlew
+Whimbrel
+Redshank
+Spotted Redshank
+Greenshank
+Common Sandpiper
+Green Sandpiper
+Wood Sandpiper
+Turnstone
+Red Nk Phalarope
+Grey Phalarope
+Arctic Skua
+Long Tail Skua
+Great Skua
+Black Headed Gull
+Mediterranean Gull
+Little Gull
+Common Gull
+Lesser Black Back
+Greater Black Back
+Herring Gull
+Iceland Gull
+Glaucous Gull
+Kittiwake
+Arctic Tern
+Black Tern
+Common Tern
+Little Tern
+Roseate Tern
+Sandwich Tern
+White Wing Bk Tern
+Guillemot
+Razorbill
+Black Guillemot
+Puffin
+Little Auk
+Rock Dove
+Stock Pigeon
+Woodpigeon
+Collared Dove
+Turtle Dove
+Ring Neck Parakeet
+Cuckoo
+Barn Owl
+Little Owl
+Long Eared Owl
+Short Eared Owl
+Tawny Owl
+Nightjar
+Swift
+Swallow
+Red Rump Swallow
+House Martin
+Sand Martin
+Kingfisher
+Hoopoe
+Green Woodpecker
+Less Spot Wpecker
+Great Spot Wpcker
+Shore Lark
+Sky Lark
+Wood Lark
+Meadow Pipit
+Rock Pipit
+Tree Pipit
+Pied Wagtail
+Grey Wagtail
+Yellow Wagtail
+Citrine Wagtail
+Waxwing
+Dipper
+Wren
+Dunnock
+Robin
+Nightingale
+Redstart
+Black Redstart
+Stonechat
+Whinchat
+Wheatear
+Blackbird
+Ring Ouzel
+Mistle Thrush
+Song Thrush
+Fieldfare
+Redwing
+Cettis Warbler
+Grasshopper Warblr
+Reed Warbler
+Sedge Warbler
+Willow Warbler
+Chiffchaff
+Dartford Warbler
+Whitethroat
+Lesser Whitethroat
+Garden Warbler
+Blackcap
+Wood Warbler
+Goldcrest
+Firecrest
+Pied Flycatcher
+Spotted Flycatcher
+Blue Tit
+Coal Tit
+Great Tit
+Long Tailed Tit
+Marsh Tit
+Willow Tit
+Bearded Tit
+Crested Tit
+Nuthatch
+Treecreeper
+Golden Oriole
+Red Back Shrike
+Great Grey Shrike
+Woodchat Shrike
+Jay
+Magpie
+Carrion Crow
+Hooded Crow
+Rook
+Jackdaw
+Raven
+Chough
+Starling
+House Sparrow
+Tree Sparrow
+Brambling
+Bullfinch
+Chaffinch
+Goldfinch
+Greenfinch
+Hawfinch
+Linnet
+Redpoll
+Siskin
+Crossbill
+Girl Bunting
+Corn Bunting
+Reed Bunting
+Yellowhammer

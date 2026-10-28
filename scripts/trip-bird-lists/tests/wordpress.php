@@ -45,7 +45,15 @@ try {
         array( 'id' => 'kite', 'name' => 'Red Kite' ),
         array( 'id' => 'owl', 'name' => 'Barn Owl' ),
     );
+    $bundled = SLB\TripBirdLists\bundled_master();
+    slb_assert( count( $bundled ) === 263, 'The supplied master list contains 263 unique birds.' );
+    slb_assert( count( array_unique( array_column( $bundled, 'id' ) ) ) === 263 && count( array_unique( array_column( $bundled, 'name' ) ) ) === 263, 'Bundled identifiers and bird names are unique.' );
+    delete_option( 'slb_bird_list_master' );
+    SLB\TripBirdLists\install();
+    slb_assert( get_option( 'slb_bird_list_master' ) === $bundled, 'An unconfigured installation receives the bundled master list.' );
     update_option( 'slb_bird_list_master', $birds, false );
+    SLB\TripBirdLists\install();
+    slb_assert( get_option( 'slb_bird_list_master' ) === $birds, 'Upgrades preserve an administrator-configured master list.' );
     $category = get_term_by( 'slug', 'trip-list', 'category' );
     slb_assert( (bool) $category, 'Existing Trip list category is available.' );
     update_option( 'slb_bird_list_category', $category->term_id, false );

@@ -244,8 +244,10 @@ local safeguards, or private database exports belong in the release package.
 - The existing production category is named **Trip list**, with slug
   `trip-list`; the plugin uses that existing category rather than creating a
   similarly named duplicate. Administrators can change the category in settings.
-- The administrator will supply a different master bird list. No checklist is
-  seeded from historical PDFs. Settings accept one bird name per line.
+- The administrator supplied `Potteric-Carr-Trip-List-2.pdf` as the full list.
+  Version 0.1.1 bundles its 263 unique bird names as the default for unconfigured
+  installations. Fulmar appears twice in the source and is retained once.
+  Trip-specific sightings are excluded. Settings accept one bird name per line.
 - The first version includes an optional plain-text trip summary.
 - New trips snapshot the master list on their first successful save.
 - Reports render server-side through a shortcode using a separately stored

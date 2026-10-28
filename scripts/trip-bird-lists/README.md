@@ -1,7 +1,8 @@
 # Trip bird lists development
 
 The plugin source is in `app/public/wp-content/plugins/slb-trip-bird-lists`.
-The master list is intentionally empty until the administrator supplies it.
+The bundled master list contains 263 unique birds from the administrator's
+Potteric Carr PDF. Installation seeds it only if no master list is configured.
 
 ## Checks
 

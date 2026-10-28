@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SLB Trip Bird Lists
  * Description: Record a complete bird checklist against an event and publish a linked trip report.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Requires at least: 6.5
  * Requires PHP: 8.0
  * Author: South Leicester Birdwatchers
@@ -13,13 +13,20 @@ namespace SLB\TripBirdLists;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 const MASTER_OPTION = 'slb_bird_list_master';
 const CATEGORY_OPTION = 'slb_bird_list_category';
 
 function table() {
     global $wpdb;
     return $wpdb->prefix . 'slb_bird_lists';
+}
+
+function bundled_master() {
+    $names = file( __DIR__ . '/data/master-birds.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+    return array_map( function ( $name ) {
+        return array( 'id' => 'slb-' . substr( hash( 'sha256', $name ), 0, 24 ), 'name' => $name );
+    }, $names );
 }
 
 function install() {
@@ -40,6 +47,8 @@ function install() {
     if ( $category ) {
         add_option( CATEGORY_OPTION, $category->term_id );
     }
+    // Seed only an unconfigured installation; never replace an administrator's list.
+    add_option( MASTER_OPTION, bundled_master(), '', false );
     update_option( 'slb_bird_lists_version', VERSION, false );
 }
 register_activation_hook( __FILE__, __NAMESPACE__ . '\\install' );

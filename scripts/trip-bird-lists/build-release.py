@@ -10,6 +10,7 @@ version = re.search(r'\* Version: ([0-9.]+)', (plugin / 'slb-trip-bird-lists.php
 files = [
     'slb-trip-bird-lists.php', 'includes-admin.php', 'readme.txt',
     'assets/editor.js', 'assets/editor.css', 'assets/report.css',
+    'data/master-birds.txt',
 ]
 destination = root / 'dist' / f'slb-trip-bird-lists-{version}.zip'
 destination.parent.mkdir(exist_ok=True)

@@ -2,7 +2,7 @@
 Contributors: southleicesterbirdwatchers
 Requires at least: 6.5
 Requires PHP: 8.0
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 
 Record a full bird checklist against a trip event and publish an HTML trip report.
@@ -11,8 +11,8 @@ Record a full bird checklist against a trip event and publish an HTML trip repor
 
 1. Install and activate The Events Calendar.
 2. Upload the plugin ZIP through Plugins > Add New > Upload Plugin, then activate.
-3. Open Events > Bird list settings. Choose the existing Trip list category and
-   paste your master list, one bird per line, in report order.
+3. Open Events > Bird list settings. Check the report category and bundled master
+   list. You can edit the list, using one bird per line, in report order.
 4. Open Events > Bird lists and select a trip. Alternatively use the Trip bird
    list panel or Bird list row action on an event.
 5. Tick sightings, save, preview the complete report, then publish explicitly.
@@ -49,10 +49,18 @@ event ID. Deactivation and deletion of the plugin retain its database data, but
 the plugin must be active to render shortcode reports. No uninstall data purge
 is performed.
 
-No master species list is bundled. Database tables and settings are local to
-each WordPress installation; deployment does not copy development data.
+A 263-bird master list is bundled from Potteric-Carr-Trip-List-2.pdf, supplied
+by the administrator. It is used only when no master list is configured.
+The repeated Fulmar entry is included once. Names and abbreviations are retained
+as supplied, including "Girl Bunting", which requires administrator review.
+Trip-specific X marks are not imported. Database tables and settings are local
+to each WordPress installation; deployment does not copy development sightings.
 
 == Changelog ==
+
+= 0.1.1 =
+Bundle the administrator-supplied master checklist for new installations.
+Preserve configured master lists and historical trip snapshots on upgrade.
 
 = 0.1.0 =
 Initial version: event-linked checklists, mobile editor, save recovery, master

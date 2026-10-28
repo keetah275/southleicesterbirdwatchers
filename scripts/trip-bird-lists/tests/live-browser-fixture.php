@@ -63,6 +63,7 @@ $fixture = array(
     'editorUrl' => SLB\TripBirdLists\editor_url( $event ),
     'settingsUrl' => SLB\TripBirdLists\settings_url(),
     'origin' => home_url(),
+    'masterNames' => array_column( $master ?? array(), 'name' ),
     'cookies' => array(
         array( 'name' => AUTH_COOKIE, 'value' => wp_generate_auth_cookie( $user, $expiry, 'auth', $token ), 'url' => home_url() ),
         array( 'name' => LOGGED_IN_COOKIE, 'value' => wp_generate_auth_cookie( $user, $expiry, 'logged_in', $token ), 'url' => home_url() ),
