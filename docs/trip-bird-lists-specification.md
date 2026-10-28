@@ -238,3 +238,15 @@ local safeguards, or private database exports belong in the release package.
 - Multiple observers and collaborative entry.
 - Seasonal or location-specific master lists.
 - Conversion of historical spreadsheet/PDF reports.
+
+## Implementation decisions
+
+- The existing production category is named **Trip list**, with slug
+  `trip-list`; the plugin uses that existing category rather than creating a
+  similarly named duplicate. Administrators can change the category in settings.
+- The administrator will supply a different master bird list. No checklist is
+  seeded from historical PDFs. Settings accept one bird name per line.
+- The first version includes an optional plain-text trip summary.
+- New trips snapshot the master list on their first successful save.
+- Reports render server-side through a shortcode using a separately stored
+  published snapshot. The plugin must remain active to render these reports.

@@ -1,0 +1,13 @@
+.slb-report { max-width: 48rem; overflow-wrap: anywhere; }
+.slb-report table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+.slb-report caption { text-align: left; font-weight: bold; margin-block: 1rem; }
+.slb-report th, .slb-report td { text-align: left; padding: .65rem; border-bottom: 1px solid #ddd; }
+.slb-report tbody th { font-weight: normal; }
+.slb-report td { width: 6rem; }
+@media print {
+    .slb-report { max-width: none; font-size: 10pt; }
+    .slb-report table { font-size: 10pt; }
+    .slb-report th, .slb-report td { padding: .2rem .5rem; }
+    .slb-report tr { break-inside: avoid; }
+    .slb-report thead { display: table-header-group; }
+}

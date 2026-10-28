@@ -4,6 +4,7 @@ Custom WordPress development for the South Leicester Birdwatchers website.
 
 - [Local development and migration notes](LOCAL-DEVELOPMENT.md)
 - [Trip bird lists feature specification](docs/trip-bird-lists-specification.md)
+- [Plugin testing and release packaging](scripts/trip-bird-lists/README.md)
 
 The existing Local installation lives in `app/public`. Start the site in Local
 and visit http://southleicesterbirdwatchers.local.

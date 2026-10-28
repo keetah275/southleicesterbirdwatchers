@@ -1,0 +1,41 @@
+.slb-app { max-width: 860px; overflow-wrap: anywhere; }
+/* Keep ticket-sales promotions out of the dedicated field checklist screen. */
+.tribe-notice-event-tickets-install, .tribe-notice-event-tickets-activate { display: none !important; }
+.slb-app *, .slb-app *::before, .slb-app *::after { box-sizing: border-box; }
+.slb-app [hidden] { display: none !important; }
+.slb-app input[type="text"], .slb-app input[type="search"], .slb-app textarea { width: 100%; min-width: 0; font-size: 16px; }
+.slb-app .button { min-height: 44px; padding: 6px 14px; white-space: normal; line-height: 1.8; }
+.slb-toolbar { position: sticky; top: 32px; z-index: 2; padding: 14px; border: 1px solid #c3c4c7; border-radius: 6px; background: #fff; }
+.slb-toolbar label, .slb-report-settings label { display: block; margin-bottom: 6px; font-weight: 600; }
+.slb-search-row, .slb-status-row { display: flex; align-items: center; gap: 10px; }
+.slb-search-row .button, .slb-status-row .button { flex: 0 0 auto; }
+.slb-status-row { justify-content: space-between; margin-top: 10px; }
+.slb-toolbar p { margin: 8px 0 0; }
+.slb-filter { display: flex; gap: 10px; align-items: center; min-height: 48px; margin-block: 10px; }
+.slb-app input[type="checkbox"] { width: 24px; height: 24px; flex: 0 0 24px; margin: 0; }
+.slb-app input[type="checkbox"]:checked::before { width: 28px; height: 28px; margin: -3px -4px; }
+.slb-bird { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 10px 12px; border-bottom: 1px solid #dcdcde; background: #fff; cursor: pointer; font-size: 16px; }
+.slb-bird.is-seen { background: #edf7ee; }
+.slb-bird > span:first-of-type { flex: 1; }
+.slb-seen-label { color: #165b27; font-size: 13px; font-weight: 600; }
+.slb-bird:focus-within { outline: 2px solid #2271b1; outline-offset: -2px; }
+.slb-report-settings { margin-block: 24px; }
+.slb-report-settings textarea { margin-bottom: 10px; }
+.slb-report-settings input { margin-bottom: 18px; }
+.slb-preview, .slb-review { padding: 18px; margin-block: 20px; border: 2px solid #2271b1; background: white; }
+.slb-review ul { list-style: disc; padding-left: 20px; max-height: 280px; overflow: auto; }
+.slb-review li { margin-bottom: 10px; }
+.slb-warning { padding: 12px; border-left: 4px solid #dba617; background: #fff8e5; }
+.slb-preview table { width: 100%; border-collapse: collapse; }
+.slb-preview caption { text-align: left; margin-bottom: 10px; font-weight: bold; }
+.slb-preview th, .slb-preview td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
+.slb-preview tbody th { font-weight: normal; }
+.slb-summary { white-space: pre-wrap; }
+@media (max-width: 782px) {
+    .slb-toolbar { top: 46px; }
+    .slb-app .button { margin-bottom: 4px; }
+}
+@media (max-width: 600px) {
+    .slb-toolbar { top: 0; }
+    .slb-preview, .slb-review { padding: 12px; }
+}
