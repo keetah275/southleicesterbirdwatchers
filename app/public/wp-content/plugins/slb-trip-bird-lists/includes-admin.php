@@ -3,6 +3,64 @@ namespace SLB\TripBirdLists;
 
 defined( 'ABSPATH' ) || exit;
 
+/** Recent Saturday trips without a saved checklist, using the site's calendar dates. */
+function dashboard_trips( $today = null ) {
+    if ( ! available() || ! current_user_can( 'manage_options' ) ) {
+        return array();
+    }
+    global $wpdb;
+    $today = ( $today ?? current_datetime() )->setTime( 0, 0 );
+    $exclude_existing = function ( $where, $query ) use ( $wpdb ) {
+        if ( $query->get( 'slb_missing_checklists' ) ) {
+            $where .= ' AND NOT EXISTS (SELECT 1 FROM ' . table() . ' slb_list WHERE slb_list.event_id = ' . $wpdb->posts . '.ID)';
+        }
+        return $where;
+    };
+    add_filter( 'posts_where', $exclude_existing, 10, 2 );
+    try {
+        $query = new \WP_Query( array(
+            'post_type' => 'tribe_events', 'post_status' => 'publish',
+            'posts_per_page' => -1, 'no_found_rows' => true,
+            'tribe_suppress_query_filters' => true,
+            'slb_missing_checklists' => true,
+            'tax_query' => array( array( 'taxonomy' => 'tribe_events_cat', 'field' => 'slug', 'terms' => 'saturday-trip' ) ),
+            'meta_query' => array( 'trip_date' => array(
+                'key' => '_EventStartDate', 'value' => array( $today->modify( '-14 days' )->format( 'Y-m-d H:i:s' ), $today->setTime( 23, 59, 59 )->format( 'Y-m-d H:i:s' ) ),
+                'compare' => 'BETWEEN', 'type' => 'DATETIME',
+            ) ),
+            'orderby' => array( 'trip_date' => 'DESC', 'ID' => 'DESC' ),
+        ) );
+    } finally {
+        remove_filter( 'posts_where', $exclude_existing, 10 );
+    }
+    return array_values( array_filter( $query->posts, function ( $event ) { return event_allowed( $event->ID ); } ) );
+}
+
+add_action( 'wp_dashboard_setup', function () {
+    if ( available() && current_user_can( 'manage_options' ) ) {
+        wp_add_dashboard_widget( 'slb-trip-bird-lists', 'Trips needing a bird list', __NAMESPACE__ . '\\dashboard_widget', null, null, 'normal', 'high' );
+    }
+} );
+
+function dashboard_widget() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    echo '<p>Today’s trips and those from the previous 14 days. Trips disappear here once a bird checklist is saved.</p>';
+    $trips = dashboard_trips();
+    if ( ! $trips ) {
+        echo '<p><strong>No recent trips need a bird list.</strong></p>';
+    } else {
+        echo '<ul class="slb-dashboard-trips">';
+        foreach ( $trips as $trip ) {
+            echo '<li style="padding:12px 0;border-bottom:1px solid #dcdcde"><strong>' . esc_html( plain_title( $trip->post_title ) ) . '</strong><br><span>' . esc_html( event_date( $trip->ID ) ) . '</span><br>' .
+                '<a class="button button-primary" style="display:inline-flex;align-items:center;min-height:44px;margin-top:8px;white-space:normal" href="' . esc_url( editor_url( $trip->ID ) ) . '" aria-label="' . esc_attr( 'Create bird list for ' . plain_title( $trip->post_title ) ) . '">Create bird list</a></li>';
+        }
+        echo '</ul>';
+    }
+    echo '<p><a style="display:inline-flex;align-items:center;min-height:44px" href="' . esc_url( editor_url() ) . '">View all trips and existing bird lists</a></p>';
+}
+
 add_action( 'admin_menu', function () {
     $parent = available() ? 'edit.php?post_type=tribe_events' : 'tools.php';
     add_submenu_page( $parent, 'Bird lists', 'Bird lists', 'manage_options', 'slb-bird-lists', __NAMESPACE__ . '\\admin_screen' );

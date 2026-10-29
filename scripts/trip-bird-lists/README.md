@@ -28,6 +28,10 @@ It checks permissions, complete snapshots, invalid input, revision conflicts,
 draft/public separation, category assignment, idempotent publication, preservation
 of manual report content, and explicit recovery of trashed/deleted reports.
 
+Run `wp eval-file '/absolute/project/path/scripts/trip-bird-lists/tests/dashboard.php'`
+to check dashboard category, calendar-date, and missing-checklist filters. This
+local-only suite creates and removes its own calendar events.
+
 ### Browser behaviour
 
 Install Playwright in a temporary tools directory or use an existing install.

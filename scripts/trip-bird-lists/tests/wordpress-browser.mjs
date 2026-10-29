@@ -20,6 +20,18 @@ async function publish() {
 const anonymous = await browser.newContext({viewport:{width:320,height:740}});
 const publicPage = await anonymous.newPage();
 try {
+    await page.goto(`${fixture.origin}/wp-admin/index.php`);
+    const widget = page.locator('#slb-trip-bird-lists');
+    await widget.waitFor();
+    const createBirdList = widget.locator(`a[href*="event_id=${fixture.dashboardEventId}"]`);
+    assert.equal(await createBirdList.count(), 1, 'Recent trip is available directly on the mobile dashboard');
+    assert.equal(await widget.locator(`a[href*="event_id=${fixture.eventId}"]`).count(), 0, 'Existing checklists are excluded');
+    assert(await createBirdList.evaluate(el => el.getBoundingClientRect().height >= 44));
+    await createBirdList.click();
+    await page.locator('#slb-save').click();
+    await saved();
+    await page.goto(`${fixture.origin}/wp-admin/index.php`);
+    assert.equal(await page.locator(`#slb-trip-bird-lists a[href*="event_id=${fixture.dashboardEventId}"]`).count(), 0, 'Saving a checklist removes its dashboard action');
     await page.goto(fixture.settingsUrl);
     assert.equal(await page.locator('#slb-master').inputValue(), fixture.masterNames.join('\n'), 'Real master list remains unchanged');
     const listUrl = new URL(fixture.editorUrl);

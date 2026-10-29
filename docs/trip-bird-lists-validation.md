@@ -1,6 +1,6 @@
 # Trip bird lists validation
 
-Validated locally on 28–29 October 2026 through version 0.1.4.
+Validated locally on 28–29 October 2026 through version 0.1.6.
 
 - PHP syntax checks passed for the plugin and test helpers.
 - JavaScript syntax checks passed; Git whitespace checks passed.
@@ -29,6 +29,13 @@ Validated locally on 28–29 October 2026 through version 0.1.4.
   Version 0.1.4 adds a document-style panel with a trip heading, summary totals,
   shaded rows, and matching preview styling; desktop screenshots are also captured.
 - Release packaging uses an explicit file allowlist and checks ZIP integrity.
+- 10 additional dashboard checks passed for trip categories, inclusive date
+  boundaries, exclusion of future/old/unpublished events and saved checklists,
+  and administrator permissions. Test events are created through the calendar's
+  current API so its occurrence records participate in the query.
+- The real WordPress browser suite also verifies the dashboard action at 320px,
+  a 44px tap target, exclusion of an existing checklist, and removal immediately
+  after saving a newly opened checklist.
 
 Version 0.1.1 includes the administrator-supplied Potteric Carr master list.
 Tests use temporary species snapshots and restore the original settings. All temporary

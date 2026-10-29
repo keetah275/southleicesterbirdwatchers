@@ -11,12 +11,14 @@ if ( $mode === 'cleanup' ) {
         return;
     }
     $fixture = json_decode( file_get_contents( $fixture_file ), true );
-    if ( get_post_meta( $fixture['eventId'], '_slb_browser_fixture', true ) === 'yes' ) {
-        $record = SLB\TripBirdLists\row( $fixture['eventId'] );
+    foreach ( array_filter( array( $fixture['eventId'], $fixture['dashboardEventId'] ?? null ) ) as $fixture_event ) {
+    if ( get_post_meta( $fixture_event, '_slb_browser_fixture', true ) === 'yes' ) {
+        $record = SLB\TripBirdLists\row( $fixture_event );
         if ( $record && $record->report_id ) wp_delete_post( $record->report_id, true );
-        wp_delete_post( $fixture['eventId'], true );
+        wp_delete_post( $fixture_event, true );
         global $wpdb;
-        $wpdb->delete( SLB\TripBirdLists\table(), array( 'event_id' => $fixture['eventId'] ) );
+        $wpdb->delete( SLB\TripBirdLists\table(), array( 'event_id' => $fixture_event ) );
+    }
     }
     if ( get_user_meta( $fixture['userId'], '_slb_browser_fixture', true ) === 'yes' ) {
         require_once ABSPATH . 'wp-admin/includes/user.php';
@@ -33,11 +35,20 @@ $user = wp_insert_user( array( 'user_login' => 'slb_browser_' . wp_generate_pass
 if ( is_wp_error( $user ) ) WP_CLI::error( $user->get_error_message() );
 update_user_meta( $user, '_slb_browser_fixture', 'yes' );
 wp_set_current_user( $user );
-$event = wp_insert_post( array( 'post_type' => 'tribe_events', 'post_title' => 'SLB mobile browser test trip', 'post_status' => 'publish' ), true );
-if ( is_wp_error( $event ) ) WP_CLI::error( $event->get_error_message() );
-update_post_meta( $event, '_slb_browser_fixture', 'yes' );
-update_post_meta( $event, '_EventStartDate', '2026-10-28 09:00:00' );
-file_put_contents( $fixture_file, wp_json_encode( array( 'eventId' => $event, 'userId' => $user ) ) );
+$today = current_datetime()->format( 'Y-m-d' );
+$create_event = function ( $title ) use ( $today ) {
+    $event = tribe_events()->set_args( array( 'title' => $title, 'status' => 'publish',
+        'start_date' => $today . ' 09:00:00', 'end_date' => $today . ' 17:00:00',
+        'timezone' => wp_timezone_string() ) )->create();
+    if ( ! $event instanceof WP_Post ) throw new RuntimeException( 'Unable to create browser fixture event.' );
+    update_post_meta( $event->ID, '_slb_browser_fixture', 'yes' );
+    $term = get_term_by( 'slug', 'saturday-trip', 'tribe_events_cat' );
+    if ( $term ) wp_set_object_terms( $event->ID, array( (int) $term->term_id ), 'tribe_events_cat' );
+    return $event->ID;
+};
+$event = $create_event( 'SLB mobile browser test trip' );
+$dashboard_event = $create_event( 'SLB dashboard browser test trip' );
+file_put_contents( $fixture_file, wp_json_encode( array( 'eventId' => $event, 'dashboardEventId' => $dashboard_event, 'userId' => $user ) ) );
 chmod( $fixture_file, 0600 );
 $master = get_option( 'slb_bird_list_master', null );
 $birds = array( array( 'id' => 'test-robin', 'name' => 'Robin' ), array( 'id' => 'test-wren', 'name' => 'Wren' ) );
@@ -59,7 +70,7 @@ try {
 $expiry = time() + 3600;
 $token = WP_Session_Tokens::get_instance( $user )->create( $expiry );
 $fixture = array(
-    'eventId' => $event, 'userId' => $user,
+    'eventId' => $event, 'dashboardEventId' => $dashboard_event, 'userId' => $user,
     'editorUrl' => SLB\TripBirdLists\editor_url( $event ),
     'settingsUrl' => SLB\TripBirdLists\settings_url(),
     'origin' => home_url(),

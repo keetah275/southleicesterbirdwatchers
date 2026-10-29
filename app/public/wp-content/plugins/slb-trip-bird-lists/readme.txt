@@ -2,7 +2,7 @@
 Contributors: southleicesterbirdwatchers
 Requires at least: 6.5
 Requires PHP: 8.0
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 License: GPLv2 or later
 
 Record a full bird checklist against a trip event and publish an HTML trip report.
@@ -18,6 +18,12 @@ Record a full bird checklist against a trip event and publish an HTML trip repor
 5. Tick sightings, save, preview the complete report, then publish explicitly.
 
 == Recording sightings ==
+
+The WordPress Dashboard includes Trips needing a bird list, with large Create
+bird list buttons. It shows published events in the Saturday trip category dated
+today or within the previous 14 calendar days, using the WordPress site timezone.
+A trip disappears when its checklist is first saved, including draft checklists.
+Use View all trips and existing bird lists to resume a saved list.
 
 Seen and Heard are independent columns: tick either or both for each bird.
 Reports show both columns for every bird. The recorded-species total counts a
@@ -66,6 +72,11 @@ Trip-specific X marks are not imported. Database tables and settings are local
 to each WordPress installation; deployment does not copy development sightings.
 
 == Changelog ==
+
+= 0.1.6 =
+Add a prominent dashboard widget for Saturday trips occurring today or in the
+previous 14 calendar days which do not yet have a saved checklist. Dates use the
+WordPress site timezone. Existing lists remain accessible through Bird lists.
 
 = 0.1.5 =
 Decode HTML entities in event and report titles before displaying or editing

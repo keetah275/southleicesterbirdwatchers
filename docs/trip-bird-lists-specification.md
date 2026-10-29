@@ -241,6 +241,12 @@ local safeguards, or private database exports belong in the release package.
 
 ## Implementation decisions
 
+- The WordPress Dashboard includes **Trips needing a bird list**, for published
+  events in the existing **Saturday trip** event category. It includes today
+  and the previous 14 calendar days in the site timezone, newest first. Future,
+  older, and indoor-meeting events are excluded. A saved checklist, including a
+  draft, removes the event from this panel. A link to all lists supports resuming
+  saved work. The panel is restricted to administrators and uses mobile tap targets.
 - Reports and previews use a distinct document-style panel with a trip heading,
   separate summary totals, and alternating checklist rows. Print styles remove
   surrounding site navigation and post details and repeat table column headings.
