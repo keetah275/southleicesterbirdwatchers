@@ -64,6 +64,8 @@ try {
     assert.equal(await publicPage.locator('.slb-report td:nth-child(2) strong').count(), 3);
     await mkdir('/private/tmp/slb-trip-bird-lists', {recursive:true});
     await publicPage.screenshot({path:'/private/tmp/slb-trip-bird-lists/wordpress-report-mobile.png',fullPage:true});
+    await publicPage.setViewportSize({width:1280,height:900});
+    await publicPage.locator('.slb-report').screenshot({path:'/private/tmp/slb-trip-bird-lists/wordpress-report-desktop.png'});
     await page.locator('#slb-close-preview').click();
     await page.evaluate(() => scrollTo(0,0));
     await page.screenshot({path:'/private/tmp/slb-trip-bird-lists/wordpress-editor-mobile.png'});

@@ -1,6 +1,6 @@
 # Trip bird lists validation
 
-Validated locally on 28–29 October 2026 through version 0.1.3.
+Validated locally on 28–29 October 2026 through version 0.1.4.
 
 - PHP syntax checks passed for the plugin and test helpers.
 - JavaScript syntax checks passed; Git whitespace checks passed.
@@ -26,6 +26,8 @@ Validated locally on 28–29 October 2026 through version 0.1.3.
   the same report. Anonymous access to the checklist API was denied.
 - Public report mobile screenshots and an A4 print PDF were generated for
   inspection under `/private/tmp/slb-trip-bird-lists/`.
+  Version 0.1.4 adds a document-style panel with a trip heading, summary totals,
+  shaded rows, and matching preview styling; desktop screenshots are also captured.
 - Release packaging uses an explicit file allowlist and checks ZIP integrity.
 
 Version 0.1.1 includes the administrator-supplied Potteric Carr master list.

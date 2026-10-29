@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SLB Trip Bird Lists
  * Description: Record a complete bird checklist against an event and publish a linked trip report.
- * Version: 0.1.3
+ * Version: 0.1.4
  * Requires at least: 6.5
  * Requires PHP: 8.0
  * Author: South Leicester Birdwatchers
@@ -13,7 +13,7 @@ namespace SLB\TripBirdLists;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.3';
+const VERSION = '0.1.4';
 const MASTER_OPTION = 'slb_bird_list_master';
 const CATEGORY_OPTION = 'slb_bird_list_category';
 
@@ -285,20 +285,24 @@ add_action( 'rest_api_init', function () {
 function report_html( $id, $draft ) {
     $seen = array_fill_keys( $draft['seen'], true );
     $heard = array_fill_keys( $draft['heard'] ?? array(), true );
-    $html = '<section class="slb-report" aria-label="Bird checklist"><p>' . esc_html( event_date( $id ) ) .
-        ' · <a href="' . esc_url( get_permalink( $id ) ) . '">View trip event</a></p>';
+    $html = '<section class="slb-report" aria-label="Bird checklist"><header class="slb-report-header">' .
+        '<p class="slb-report-eyebrow">South Leicester Birdwatchers · Trip bird list</p>' .
+        '<h2>' . esc_html( $draft['title'] ) . '</h2><p class="slb-report-date">' . esc_html( event_date( $id ) ) .
+        ' <span aria-hidden="true">/</span> <a href="' . esc_url( get_permalink( $id ) ) . '">View trip event</a></p></header><div class="slb-report-body">';
     if ( $draft['summary'] !== '' ) {
         $html .= '<div class="slb-summary">' . wpautop( esc_html( $draft['summary'] ) ) . '</div>';
     }
-    $html .= '<p><strong>' . count( $seen ) . ' species seen · ' . count( $heard ) . ' heard · ' . count( $seen + $heard ) . ' recorded out of ' . count( $draft['species'] ) . '</strong></p>' .
-        '<p>Seen and heard are recorded separately; a bird may be both. — = not recorded in that column.</p>' .
+    $html .= '<div class="slb-report-totals" aria-label="Trip totals"><p><strong>' . count( $seen ) . '</strong><span>species seen</span></p>' .
+        '<p><strong>' . count( $heard ) . '</strong><span>species heard</span></p>' .
+        '<p aria-label="' . count( $seen + $heard ) . ' recorded out of ' . count( $draft['species'] ) . '"><strong>' . count( $seen + $heard ) . '</strong><span>recorded / ' . count( $draft['species'] ) . ' listed</span></p></div>' .
+        '<p class="slb-report-key">Seen and heard are recorded separately; a bird may be both. <span>— = not recorded in that column.</span></p>' .
         '<table><caption>Complete bird checklist</caption><thead><tr><th scope="col">Bird</th><th scope="col">Seen</th><th scope="col">Heard</th></tr></thead><tbody>';
     foreach ( $draft['species'] as $bird ) {
-        $html .= '<tr><th scope="row">' . esc_html( $bird['name'] ) . '</th><td>' .
+        $html .= '<tr' . ( isset( $seen[ $bird['id'] ] ) || isset( $heard[ $bird['id'] ] ) ? ' class="slb-recorded"' : '' ) . '><th scope="row">' . esc_html( $bird['name'] ) . '</th><td>' .
             ( isset( $seen[ $bird['id'] ] ) ? '<strong>✓ Seen</strong>' : '<span aria-label="Not recorded as seen">—</span>' ) . '</td><td>' .
             ( isset( $heard[ $bird['id'] ] ) ? '<strong>✓ Heard</strong>' : '<span aria-label="Not recorded as heard">—</span>' ) . '</td></tr>';
     }
-    return $html . '</tbody></table></section>';
+    return $html . '</tbody></table><p class="slb-report-footer">Complete trip checklist · ' . count( $draft['species'] ) . ' species</p></div></section>';
 }
 
 add_shortcode( 'slb_trip_report', function ( $attrs ) {

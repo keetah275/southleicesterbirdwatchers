@@ -241,6 +241,9 @@ local safeguards, or private database exports belong in the release package.
 
 ## Implementation decisions
 
+- Reports and previews use a distinct document-style panel with a trip heading,
+  separate summary totals, and alternating checklist rows. Print styles remove
+  surrounding site navigation and post details and repeat table column headings.
 - Administrators can independently mark **Seen** and **Heard** for each bird.
   Both columns appear in previews and published reports. Heard-only birds are
   included in the recorded-birds filter. Totals show seen, heard, and unique

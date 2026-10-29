@@ -1,13 +1,67 @@
-.slb-report { max-width: 48rem; overflow-wrap: anywhere; }
-.slb-report table { width: 100%; border-collapse: collapse; font-size: 1rem; }
-.slb-report caption { text-align: left; font-weight: bold; margin-block: 1rem; }
-.slb-report th, .slb-report td { text-align: left; padding: .65rem; border-bottom: 1px solid #ddd; }
-.slb-report tbody th { font-weight: normal; }
-.slb-report td { width: 4.5rem; }
+.slb-report {
+    --slb-ink: #203d38;
+    --slb-line: #d5dfd8;
+    max-width: 52rem;
+    margin: 2rem auto;
+    border: 1px solid var(--slb-line);
+    border-top: 5px solid #e8974d;
+    border-radius: 6px;
+    background: #fffefa;
+    box-shadow: 0 8px 30px #203d3814, 0 1px 3px #203d3810;
+    color: #26352e;
+    overflow-wrap: anywhere;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+}
+.slb-report .slb-report-header { padding: 2rem; background: #eef3ed; border-bottom: 1px solid var(--slb-line); }
+.slb-report .slb-report-eyebrow { margin: 0 0 .75rem; color: #466354; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.slb-report h2 { margin: 0; font-family: Georgia, serif; font-size: clamp(1.45rem, 3vw, 2rem); font-weight: 600; line-height: 1.2; color: var(--slb-ink); }
+.slb-report .slb-report-date { margin: 1rem 0 0; font-size: .875rem; }
+.slb-report .slb-report-date span { padding-inline: .5rem; color: #788a7d; }
+.slb-report a { color: #285b4c; text-underline-offset: .18em; }
+.slb-report .slb-report-body { padding: 1.5rem 2rem; }
+.slb-report .slb-summary { font-size: 1rem; margin-bottom: 1.5rem; }
+.slb-report .slb-report-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-bottom: 1.25rem; }
+.slb-report .slb-report-totals p { margin: 0; padding: .9rem .6rem; border: 1px solid var(--slb-line); border-radius: 4px; background: #fff; text-align: center; }
+.slb-report .slb-report-totals strong { display: block; font-family: Georgia, serif; font-size: 2rem; line-height: 1.1; color: var(--slb-ink); }
+.slb-report .slb-report-totals span { display: block; margin-top: .4rem; font-size: .75rem; color: #4d6054; }
+.slb-report .slb-report-key { margin: 0 0 1.5rem; font-size: .8rem; color: #526456; }
+.slb-report .slb-report-key span { display: block; }
+.slb-report table { width: 100%; border-collapse: collapse; font-size: .95rem; table-layout: fixed; }
+.slb-report caption { margin-bottom: .75rem; text-align: left; font-size: 1rem; font-weight: 700; color: var(--slb-ink); }
+.slb-report th, .slb-report td { padding: .7rem .65rem; border-bottom: 1px solid var(--slb-line); }
+.slb-report thead th { background: var(--slb-ink); color: #fff; text-align: left; font-size: .8rem; letter-spacing: .04em; }
+.slb-report thead th:not(:first-child) { width: 5rem; text-align: center; }
+.slb-report tbody th { font-weight: 400; text-align: left; }
+.slb-report tbody tr:nth-child(even) { background: #f3f5f0; }
+.slb-report td { text-align: center; font-size: .8rem; }
+.slb-report td strong { color: #245c41; font-weight: 650; }
+.slb-report td span { color: #89938a; }
+.slb-report .slb-recorded th { font-weight: 650; }
+.slb-report .slb-report-footer { margin: 1.25rem 0 0; padding-top: .75rem; border-top: 1px solid var(--slb-line); color: #69776b; font-size: .75rem; }
+@media (max-width: 480px) {
+    .slb-report .slb-report-header { padding: 1.25rem 1rem; }
+    .slb-report .slb-report-body { padding: 1rem .75rem; }
+    .slb-report .slb-report-totals { gap: .35rem; }
+    .slb-report .slb-report-totals p { padding: .75rem .25rem; }
+    .slb-report .slb-report-totals strong { font-size: 1.65rem; }
+    .slb-report th, .slb-report td { padding: .65rem .35rem; }
+    .slb-report thead th:not(:first-child) { width: 3.8rem; }
+}
 @media print {
-    .slb-report { max-width: none; font-size: 10pt; }
+    /* Print the document and its containing layout, without site navigation or post chrome. */
+    body:has(.slb-report) :not(.slb-report):not(.slb-report *):not(:has(.slb-report)) { display: none !important; }
+    body:has(.slb-report) :has(.slb-report) { margin: 0 !important; padding: 0 !important; max-width: none !important; min-height: 0 !important; }
+    .slb-report { max-width: none; margin: 0; border: 1px solid #999; border-radius: 0; box-shadow: none; background: #fff; color: #000; font-size: 10pt; }
+    .slb-report .slb-report-header { padding: .6rem 1rem; background: none; }
+    .slb-report h2 { font-size: 18pt; }
+    .slb-report .slb-report-body { padding: .6rem 1rem; }
+    .slb-report .slb-report-totals p { padding: .3rem; }
+    .slb-report .slb-report-totals strong { font-size: 18pt; }
     .slb-report table { font-size: 10pt; }
     .slb-report th, .slb-report td { padding: .2rem .5rem; }
+    .slb-report thead th { background: none; color: #000; border-top: 1px solid #999; }
     .slb-report tr { break-inside: avoid; }
     .slb-report thead { display: table-header-group; }
+    .slb-report .slb-report-header, .slb-report .slb-report-totals { break-inside: avoid; }
 }

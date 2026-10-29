@@ -109,6 +109,7 @@ function admin_screen() {
             return;
         }
         wp_enqueue_style( 'slb-bird-editor', plugins_url( 'assets/editor.css', __FILE__ ), array(), VERSION );
+        wp_enqueue_style( 'slb-bird-report', plugins_url( 'assets/report.css', __FILE__ ), array( 'slb-bird-editor' ), VERSION );
         wp_enqueue_script( 'slb-bird-editor', plugins_url( 'assets/editor.js', __FILE__ ), array(), VERSION, true );
         wp_add_inline_script( 'slb-bird-editor', 'window.slbBirdLists=' . wp_json_encode( array(
             'endpoint' => rest_url( 'slb-birds/v1/trips/' . $id ), 'nonce' => wp_create_nonce( 'wp_rest' ),
