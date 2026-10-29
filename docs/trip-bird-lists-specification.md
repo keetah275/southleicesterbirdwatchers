@@ -241,6 +241,13 @@ local safeguards, or private database exports belong in the release package.
 
 ## Implementation decisions
 
+- Administrators can independently mark **Seen** and **Heard** for each bird.
+  Both columns appear in previews and published reports. Heard-only birds are
+  included in the recorded-birds filter. Totals show seen, heard, and unique
+  recorded species, with no double-counting of birds recorded in both columns.
+  Existing checklists default Heard to unticked without changing Seen records.
+- The sticky toolbar includes a shortcut to the report details below the list;
+  a return shortcut goes back to the beginning of the checklist.
 - The existing production category is named **Trip list**, with slug
   `trip-list`; the plugin uses that existing category rather than creating a
   similarly named duplicate. Administrators can change the category in settings.

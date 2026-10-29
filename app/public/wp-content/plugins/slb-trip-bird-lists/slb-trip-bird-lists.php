@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SLB Trip Bird Lists
  * Description: Record a complete bird checklist against an event and publish a linked trip report.
- * Version: 0.1.1
+ * Version: 0.1.3
  * Requires at least: 6.5
  * Requires PHP: 8.0
  * Author: South Leicester Birdwatchers
@@ -13,7 +13,7 @@ namespace SLB\TripBirdLists;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.1';
+const VERSION = '0.1.3';
 const MASTER_OPTION = 'slb_bird_list_master';
 const CATEGORY_OPTION = 'slb_bird_list_category';
 
@@ -88,12 +88,14 @@ function initial_draft( $id ) {
         'summary' => '',
         'species' => get_option( MASTER_OPTION, array() ),
         'seen' => array(),
+        'heard' => array(),
     );
 }
 
 function state( $id ) {
     $record = row( $id );
     $draft = $record ? json_decode( $record->draft, true ) : initial_draft( $id );
+    $draft['heard'] = $draft['heard'] ?? array();
     $report = $record && $record->report_id ? get_post( $record->report_id ) : null;
     return array(
         'revision' => $record ? (int) $record->revision : 0,
@@ -154,14 +156,15 @@ function save( $request ) {
             return error( 'no_species', 'Set up the master bird list before creating a trip checklist.' );
         }
         $seen = $request->get_param( 'seen' );
+        $heard = $request->has_param( 'heard' ) ? $request->get_param( 'heard' ) : ( $draft['heard'] ?? array() );
         $title = $request->get_param( 'title' );
         $summary = $request->get_param( 'summary' );
-        if ( ! is_array( $seen ) || ! is_string( $title ) || ! is_string( $summary ) ||
-            strlen( $title ) > 500 || strlen( $summary ) > 20000 || count( $seen ) > count( $draft['species'] ) ) {
+        if ( ! is_array( $seen ) || ! is_array( $heard ) || ! is_string( $title ) || ! is_string( $summary ) ||
+            strlen( $title ) > 500 || strlen( $summary ) > 20000 || count( $seen ) > count( $draft['species'] ) || count( $heard ) > count( $draft['species'] ) ) {
             return error( 'invalid_input', 'Check the title, summary, and selected birds.' );
         }
         $allowed = array_column( $draft['species'], 'id' );
-        foreach ( $seen as $species_id ) {
+        foreach ( array_merge( $seen, $heard ) as $species_id ) {
             if ( ! is_string( $species_id ) || ! in_array( $species_id, $allowed, true ) ) {
                 return error( 'invalid_species', 'The checklist contains an unknown bird.' );
             }
@@ -169,6 +172,7 @@ function save( $request ) {
         $draft['title'] = sanitize_text_field( $title );
         $draft['summary'] = sanitize_textarea_field( $summary );
         $draft['seen'] = array_values( array_intersect( $allowed, $seen ) );
+        $draft['heard'] = array_values( array_intersect( $allowed, $heard ) );
         if ( $draft['title'] === '' ) {
             return error( 'empty_title', 'Enter a report title.' );
         }
@@ -280,17 +284,19 @@ add_action( 'rest_api_init', function () {
 
 function report_html( $id, $draft ) {
     $seen = array_fill_keys( $draft['seen'], true );
+    $heard = array_fill_keys( $draft['heard'] ?? array(), true );
     $html = '<section class="slb-report" aria-label="Bird checklist"><p>' . esc_html( event_date( $id ) ) .
         ' · <a href="' . esc_url( get_permalink( $id ) ) . '">View trip event</a></p>';
     if ( $draft['summary'] !== '' ) {
         $html .= '<div class="slb-summary">' . wpautop( esc_html( $draft['summary'] ) ) . '</div>';
     }
-    $html .= '<p><strong>' . count( $seen ) . ' species seen out of ' . count( $draft['species'] ) . '</strong></p>' .
-        '<p>Seen = recorded on this trip. — = not recorded as seen.</p>' .
-        '<table><caption>Complete bird checklist</caption><thead><tr><th scope="col">Bird</th><th scope="col">Sighting</th></tr></thead><tbody>';
+    $html .= '<p><strong>' . count( $seen ) . ' species seen · ' . count( $heard ) . ' heard · ' . count( $seen + $heard ) . ' recorded out of ' . count( $draft['species'] ) . '</strong></p>' .
+        '<p>Seen and heard are recorded separately; a bird may be both. — = not recorded in that column.</p>' .
+        '<table><caption>Complete bird checklist</caption><thead><tr><th scope="col">Bird</th><th scope="col">Seen</th><th scope="col">Heard</th></tr></thead><tbody>';
     foreach ( $draft['species'] as $bird ) {
         $html .= '<tr><th scope="row">' . esc_html( $bird['name'] ) . '</th><td>' .
-            ( isset( $seen[ $bird['id'] ] ) ? '<strong>✓ Seen</strong>' : '<span aria-label="Not recorded as seen">—</span>' ) . '</td></tr>';
+            ( isset( $seen[ $bird['id'] ] ) ? '<strong>✓ Seen</strong>' : '<span aria-label="Not recorded as seen">—</span>' ) . '</td><td>' .
+            ( isset( $heard[ $bird['id'] ] ) ? '<strong>✓ Heard</strong>' : '<span aria-label="Not recorded as heard">—</span>' ) . '</td></tr>';
     }
     return $html . '</tbody></table></section>';
 }

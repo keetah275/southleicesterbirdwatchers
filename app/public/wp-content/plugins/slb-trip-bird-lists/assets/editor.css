@@ -11,13 +11,14 @@
 .slb-search-row .button, .slb-status-row .button { flex: 0 0 auto; }
 .slb-status-row { justify-content: space-between; margin-top: 10px; }
 .slb-toolbar p { margin: 8px 0 0; }
+.slb-toolbar .slb-jump { margin-top: 10px; }
 .slb-filter { display: flex; gap: 10px; align-items: center; min-height: 48px; margin-block: 10px; }
 .slb-app input[type="checkbox"] { width: 24px; height: 24px; flex: 0 0 24px; margin: 0; }
 .slb-app input[type="checkbox"]:checked::before { width: 28px; height: 28px; margin: -3px -4px; }
-.slb-bird { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 10px 12px; border-bottom: 1px solid #dcdcde; background: #fff; cursor: pointer; font-size: 16px; }
-.slb-bird.is-seen { background: #edf7ee; }
-.slb-bird > span:first-of-type { flex: 1; }
-.slb-seen-label { color: #165b27; font-size: 13px; font-weight: 600; }
+.slb-bird { display: flex; align-items: center; gap: 8px; min-height: 64px; padding: 8px 10px; border-bottom: 1px solid #dcdcde; background: #fff; font-size: 16px; }
+.slb-bird.is-seen, .slb-bird.is-heard { background: #edf7ee; }
+.slb-bird > span:first-of-type { flex: 1; min-width: 0; }
+.slb-observation { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 48px; min-height: 48px; cursor: pointer; font-size: 12px; }
 .slb-bird:focus-within { outline: 2px solid #2271b1; outline-offset: -2px; }
 .slb-report-settings { margin-block: 24px; }
 .slb-report-settings textarea { margin-bottom: 10px; }

@@ -2,7 +2,7 @@
 Contributors: southleicesterbirdwatchers
 Requires at least: 6.5
 Requires PHP: 8.0
-Stable tag: 0.1.1
+Stable tag: 0.1.3
 License: GPLv2 or later
 
 Record a full bird checklist against a trip event and publish an HTML trip report.
@@ -19,8 +19,17 @@ Record a full bird checklist against a trip event and publish an HTML trip repor
 
 == Recording sightings ==
 
+Seen and Heard are independent columns: tick either or both for each bird.
+Reports show both columns for every bird. The recorded-species total counts a
+bird once even if both boxes are ticked. Older checklists keep their existing
+Seen selections, with Heard initially unticked. The editing filter shows all
+recorded birds, whether seen or heard.
+
+Use Report details in the sticky toolbar to jump past the checklist, and Back
+to checklist to return to its start.
+
 Only administrators can manage lists. The editor works on phones and saves
-automatically while connected. Search and the seen-only filter affect the
+automatically while connected. Search and the recorded-only filter affect the
 editor, never the full published list. A trip summary is optional.
 
 Wait for the Saved confirmation before closing the screen. During brief signal
@@ -57,6 +66,13 @@ Trip-specific X marks are not imported. Database tables and settings are local
 to each WordPress installation; deployment does not copy development sightings.
 
 == Changelog ==
+
+= 0.1.3 =
+Add independent Heard recording alongside Seen, including autosave recovery,
+conflict reconciliation, previews, reports, print layout, and legacy checklists.
+
+= 0.1.2 =
+Add shortcuts between the checklist and report details for mobile use.
 
 = 0.1.1 =
 Bundle the administrator-supplied master checklist for new installations.

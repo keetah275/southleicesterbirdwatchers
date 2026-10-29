@@ -3,7 +3,7 @@
 .slb-report caption { text-align: left; font-weight: bold; margin-block: 1rem; }
 .slb-report th, .slb-report td { text-align: left; padding: .65rem; border-bottom: 1px solid #ddd; }
 .slb-report tbody th { font-weight: normal; }
-.slb-report td { width: 6rem; }
+.slb-report td { width: 4.5rem; }
 @media print {
     .slb-report { max-width: none; font-size: 10pt; }
     .slb-report table { font-size: 10pt; }

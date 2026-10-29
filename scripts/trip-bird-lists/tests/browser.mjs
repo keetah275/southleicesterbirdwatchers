@@ -41,12 +41,12 @@ await page.route('http://slb-test.invalid/**', async route => {
             return route.fulfill({json:server});
         }
         if (saveGate) await saveGate.promise;
-        server.draft.seen = body.seen; server.draft.title = body.title; server.draft.summary = body.summary;
+        server.draft.heard = body.heard; server.draft.seen = body.seen; server.draft.title = body.title; server.draft.summary = body.summary;
         server.revision++; server.updatedAt = new Date().toISOString(); server.unpublishedChanges = true;
         return route.fulfill({json:server});
     }
     const config = {endpoint:'http://slb-test.invalid/api/trip',nonce:'test',eventId:7,userId:1,initial:server,listUrl:'http://slb-test.invalid/admin/',loginUrl:'http://slb-test.invalid/login/'};
-    return route.fulfill({contentType:'text/html',body:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:14px sans-serif;margin:10px;background:#f0f0f1}.button{display:inline-block;border:1px solid #888;border-radius:3px}button{font:inherit}input,textarea{box-sizing:border-box} ${css}</style></head><body><main class="slb-app"><h1>Trip bird lists</h1><div id="slb-editor"></div></main><script>window.slbBirdLists=${JSON.stringify(config)}</script><script>${js}</script></body></html>`});
+    return route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:14px sans-serif;margin:10px;background:#f0f0f1}.button{display:inline-block;border:1px solid #888;border-radius:3px}button{font:inherit}input,textarea{box-sizing:border-box} ${css}</style></head><body><main class="slb-app"><h1>Trip bird lists</h1><div id="slb-editor"></div></main><script>window.slbBirdLists=${JSON.stringify(config)}</script><script>${js}</script></body></html>`});
 });
 
 const status = () => page.locator('#slb-status').textContent();
@@ -63,12 +63,25 @@ try {
     assert.equal(await page.locator('.slb-bird').count(), 60);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'No horizontal overflow at 320px');
     assert.equal(await page.locator('.slb-bird').first().evaluate(el => el.getBoundingClientRect().height >= 44), true);
-    await page.locator('.slb-bird input').nth(0).check();
+    await page.locator('#slb-jump-bottom').click();
+    assert.equal(await page.locator('#slb-report-heading').evaluate(el => document.activeElement === el), true);
+    assert.equal(await page.locator('#slb-report-heading').evaluate(el => el.getBoundingClientRect().top >= document.querySelector('.slb-toolbar').getBoundingClientRect().bottom), true, 'Report heading clears the sticky toolbar');
+    await page.locator('#slb-jump-top').click();
+    assert.equal(await page.locator('.slb-bird input[data-kind="seen"]').first().evaluate(el => document.activeElement === el), true);
+    await page.locator('.slb-bird input[data-kind="seen"]').nth(0).check();
     await waitForSaved();
     assert.deepEqual(server.draft.seen, ['bird-0']);
+    await page.locator('.slb-bird input[data-kind="heard"]').nth(0).check();
+    await waitForSaved();
+    await page.locator('.slb-bird input[data-kind="heard"]').nth(9).check();
+    await waitForSaved();
+    assert.deepEqual(server.draft.heard, ['bird-0','bird-9']);
+    assert(!server.draft.seen.includes('bird-9'), 'Heard-only birds do not become seen');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+
     await page.locator('#slb-search').fill('Wren');
     assert.equal(await page.locator('.slb-bird:visible').count(), 1);
-    await page.locator('.slb-bird:visible input').check();
+    await page.locator('.slb-bird:visible input[data-kind="seen"]').check();
     await waitForSaved();
     assert.equal(server.draft.seen.length, 2, 'Search preserves earlier selections');
     await page.locator('#slb-clear').click();
@@ -76,16 +89,17 @@ try {
     // Edits while a save is in flight must be sent in a subsequent revision.
     saveGate = Promise.withResolvers();
     const inFlight = page.waitForRequest(request => request.url().endsWith('/api/trip') && request.method() === 'POST');
-    await page.locator('.slb-bird input').nth(2).check();
+    await page.locator('.slb-bird input[data-kind="seen"]').nth(2).check();
     await inFlight;
-    await page.locator('.slb-bird input').nth(3).check();
+    await page.locator('.slb-bird input[data-kind="seen"]').nth(3).check();
     saveGate.resolve();
     saveGate = null;
     await waitForSaved();
     assert.equal(server.draft.seen.length, 4, 'In-flight edits persist');
 
     offline = true;
-    await page.locator('.slb-bird input').nth(4).check();
+    await page.locator('.slb-bird input[data-kind="seen"]').nth(4).check();
+    await page.locator('.slb-bird input[data-kind="heard"]').nth(11).check();
     await page.waitForFunction(() => document.getElementById('slb-status').textContent.includes('Connection lost'));
     assert.equal(server.draft.seen.length, 4);
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('slb-birds:1:7')).draft.seen.length), 5);
@@ -95,19 +109,22 @@ try {
     await page.locator('#slb-apply-recovery').click();
     await waitForSaved();
     assert.equal(server.draft.seen.length, 5, 'Recover browser edits after reload');
+    assert(server.draft.heard.includes('bird-11'), 'Recover pending heard records after signal loss');
 
     // Remote unrelated selections survive a conflict reconciliation.
-    server.draft.seen.push('bird-8'); server.revision++;
-    await page.locator('.slb-bird input').nth(5).check();
+    server.draft.seen.push('bird-8'); server.draft.heard.push('bird-10'); server.revision++;
+    await page.locator('.slb-bird input[data-kind="seen"]').nth(5).check();
     await page.locator('#slb-apply-recovery').waitFor();
     assert.match(await page.locator('#slb-review').textContent(), /Another screen/);
     await page.locator('#slb-apply-recovery').click();
     await waitForSaved();
     assert(server.draft.seen.includes('bird-8') && server.draft.seen.includes('bird-5'));
+    assert(server.draft.heard.includes('bird-10') && server.draft.heard.includes('bird-9'), 'Merge preserves remote and local heard selections');
 
     await page.locator('#slb-seen-only').check();
     await page.locator('#slb-preview-button').click();
     assert.equal(await page.locator('#slb-preview-content tbody tr').count(), 60, 'Preview always includes every bird');
+    assert.equal(await page.locator('#slb-preview-content tbody td:nth-child(3)').filter({hasText:'✓ Heard'}).count(), 4);
     await page.locator('#slb-publish').click();
     await page.waitForFunction(() => document.getElementById('slb-publish-status').textContent.includes('successfully'));
     assert.equal(publishCalls, 1);
@@ -118,7 +135,7 @@ try {
 
     await page.locator('#slb-close-preview').click();
     await page.locator('#slb-clear').click();
-    await page.locator('.slb-bird input').nth(6).check();
+    await page.locator('.slb-bird input[data-kind="seen"]').nth(6).check();
     await waitForSaved();
     assert.match(await page.locator('#slb-publication-status').textContent(), /Unpublished changes/);
 
