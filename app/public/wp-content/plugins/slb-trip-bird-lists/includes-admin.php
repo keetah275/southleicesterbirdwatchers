@@ -132,7 +132,7 @@ function admin_screen() {
         }
         $record = row( $event->ID );
         $status = ! $record ? 'Not started' : ( $record->published ? ( $record->draft === $record->published ? 'Published' : 'Unpublished changes' ) : 'Draft checklist' );
-        echo '<li style="padding:14px 0;border-bottom:1px solid #ccc"><a style="display:inline-block;min-height:44px" href="' . esc_url( editor_url( $event->ID ) ) . '"><strong>' . esc_html( $event->post_title ) . '</strong><br>' . esc_html( event_date( $event->ID ) ) . '</a> — ' . esc_html( $status ) . '</li>';
+        echo '<li style="padding:14px 0;border-bottom:1px solid #ccc"><a style="display:inline-block;min-height:44px" href="' . esc_url( editor_url( $event->ID ) ) . '"><strong>' . esc_html( plain_title( $event->post_title ) ) . '</strong><br>' . esc_html( event_date( $event->ID ) ) . '</a> — ' . esc_html( $status ) . '</li>';
     }
     echo '</ul>';
     if ( ! $events->post_count ) {

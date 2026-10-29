@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SLB Trip Bird Lists
  * Description: Record a complete bird checklist against an event and publish a linked trip report.
- * Version: 0.1.4
+ * Version: 0.1.5
  * Requires at least: 6.5
  * Requires PHP: 8.0
  * Author: South Leicester Birdwatchers
@@ -13,7 +13,7 @@ namespace SLB\TripBirdLists;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.4';
+const VERSION = '0.1.5';
 const MASTER_OPTION = 'slb_bird_list_master';
 const CATEGORY_OPTION = 'slb_bird_list_category';
 
@@ -82,9 +82,13 @@ function row( $id ) {
     return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . table() . ' WHERE event_id = %d', $id ) );
 }
 
+function plain_title( $title ) {
+    return wp_strip_all_tags( html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+}
+
 function initial_draft( $id ) {
     return array(
-        'title' => wp_strip_all_tags( get_the_title( $id ) ) . ' — ' . event_date( $id ) . ' — Trip list',
+        'title' => plain_title( get_post_field( 'post_title', $id ) ) . ' — ' . event_date( $id ) . ' — Trip list',
         'summary' => '',
         'species' => get_option( MASTER_OPTION, array() ),
         'seen' => array(),
@@ -96,11 +100,12 @@ function state( $id ) {
     $record = row( $id );
     $draft = $record ? json_decode( $record->draft, true ) : initial_draft( $id );
     $draft['heard'] = $draft['heard'] ?? array();
+    $draft['title'] = plain_title( $draft['title'] );
     $report = $record && $record->report_id ? get_post( $record->report_id ) : null;
     return array(
         'revision' => $record ? (int) $record->revision : 0,
         'draft' => $draft,
-        'eventTitle' => wp_strip_all_tags( get_the_title( $id ) ),
+        'eventTitle' => plain_title( get_post_field( 'post_title', $id ) ),
         'eventDate' => event_date( $id ),
         'eventUrl' => get_permalink( $id ),
         'updatedAt' => $record ? str_replace( ' ', 'T', $record->updated_at ) . 'Z' : null,
@@ -169,7 +174,7 @@ function save( $request ) {
                 return error( 'invalid_species', 'The checklist contains an unknown bird.' );
             }
         }
-        $draft['title'] = sanitize_text_field( $title );
+        $draft['title'] = sanitize_text_field( plain_title( $title ) );
         $draft['summary'] = sanitize_textarea_field( $summary );
         $draft['seen'] = array_values( array_intersect( $allowed, $seen ) );
         $draft['heard'] = array_values( array_intersect( $allowed, $heard ) );
@@ -235,7 +240,7 @@ function publish( $request ) {
         if ( $report_id && ! $report && $request->get_param( 'recover' ) !== true ) {
             return error( 'report_missing', 'The report was deleted. Confirm creation of a replacement report.', 409 );
         }
-        $post_data = array( 'post_title' => $draft['title'], 'post_status' => 'publish', 'post_type' => 'post' );
+        $post_data = array( 'post_title' => plain_title( $draft['title'] ), 'post_status' => 'publish', 'post_type' => 'post' );
         if ( $report ) {
             $post_data['ID'] = $report_id;
             $post_data['post_category'] = array_values( array_unique( array_merge( wp_get_post_categories( $report_id ), array( $category ) ) ) );
@@ -287,7 +292,7 @@ function report_html( $id, $draft ) {
     $heard = array_fill_keys( $draft['heard'] ?? array(), true );
     $html = '<section class="slb-report" aria-label="Bird checklist"><header class="slb-report-header">' .
         '<p class="slb-report-eyebrow">South Leicester Birdwatchers · Trip bird list</p>' .
-        '<h2>' . esc_html( $draft['title'] ) . '</h2><p class="slb-report-date">' . esc_html( event_date( $id ) ) .
+        '<h2>' . esc_html( plain_title( $draft['title'] ) ) . '</h2><p class="slb-report-date">' . esc_html( event_date( $id ) ) .
         ' <span aria-hidden="true">/</span> <a href="' . esc_url( get_permalink( $id ) ) . '">View trip event</a></p></header><div class="slb-report-body">';
     if ( $draft['summary'] !== '' ) {
         $html .= '<div class="slb-summary">' . wpautop( esc_html( $draft['summary'] ) ) . '</div>';

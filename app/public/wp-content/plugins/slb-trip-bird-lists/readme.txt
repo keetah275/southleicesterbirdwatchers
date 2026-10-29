@@ -2,7 +2,7 @@
 Contributors: southleicesterbirdwatchers
 Requires at least: 6.5
 Requires PHP: 8.0
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 License: GPLv2 or later
 
 Record a full bird checklist against a trip event and publish an HTML trip report.
@@ -66,6 +66,10 @@ Trip-specific X marks are not imported. Database tables and settings are local
 to each WordPress installation; deployment does not copy development sightings.
 
 == Changelog ==
+
+= 0.1.5 =
+Decode HTML entities in event and report titles before displaying or editing
+them, while retaining safe HTML escaping in rendered reports.
 
 = 0.1.4 =
 Give reports and previews a document-style panel, clear trip heading, summary
