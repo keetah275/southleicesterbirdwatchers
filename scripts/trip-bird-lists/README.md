@@ -43,6 +43,8 @@ SLB_PLAYWRIGHT_MODULE=/path/to/node_modules/playwright node scripts/trip-bird-li
 ```
 
 This suite runs the real editor JavaScript and CSS against a simulated API.
+Set `SLB_TEST_WIDTH=1280` to run the interaction checks at desktop width;
+the default is 320px.
 It covers 320px mobile layout, search, queued edits, failed saves, browser recovery,
 conflict reconciliation, complete preview, publication, and login expiry. It does
 not replace the WordPress integration suite or a check inside the real admin UI.

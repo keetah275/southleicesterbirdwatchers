@@ -88,6 +88,13 @@ try {
     slb_assert( get_post_status( $report_id ) === 'publish' && in_array( (int) $category->term_id, wp_get_post_categories( $report_id ), true ), 'Use the existing report category.' );
     $html = do_shortcode( get_post( $report_id )->post_content );
     slb_assert( substr_count( $html, '<th scope="row">' ) === 4 && substr_count( $html, '✓ Seen' ) === 2, 'Render every bird, including unrecorded species.' );
+    $card_excerpt = (object) array( 'name' => 'core/post-excerpt', 'context' => array( 'postId' => $report_id ) );
+    $card_date = (object) array( 'name' => 'core/post-date', 'context' => array( 'postId' => $report_id ) );
+    $card = SLB\TripBirdLists\listing_block( '', $card_excerpt );
+    slb_assert( str_contains( $card, '2 seen · 0 heard · 2 recorded' ) && str_contains( $card, 'A lovely trip.' ), 'Cards show published totals and written summary.' );
+    $date_card = SLB\TripBirdLists\listing_block( '<div><time datetime="2026-10-29">Added date</time></div>', $card_date );
+    slb_assert( str_contains( $date_card, 'Trip date:' ) && str_contains( $date_card, 'datetime="2026-10-28"' ) && ! str_contains( $date_card, 'Added date' ), 'Cards use the event date instead of publication date.' );
+    slb_assert( SLB\TripBirdLists\listing_block( 'Old PDF excerpt', (object) array( 'name' => 'core/post-excerpt', 'context' => array( 'postId' => 0 ) ) ) === 'Old PDF excerpt', 'Unlinked older posts remain unchanged.' );
     $again = slb_request( 'POST', $event_id, array( 'revision' => 1 ), true );
     slb_assert( $again->get_data()['reportId'] === $report_id, 'Publication retry reuses the same post.' );
 
@@ -99,6 +106,7 @@ try {
     slb_assert( $changed->get_data()['unpublishedChanges'] === true, 'Draft corrections are marked unpublished.' );
     $after_draft = do_shortcode( get_post( $report_id )->post_content );
     slb_assert( $after_draft === $html, 'Draft corrections do not change the public report.' );
+    slb_assert( SLB\TripBirdLists\listing_block( '', $card_excerpt ) === $card, 'Draft corrections do not leak into list cards.' );
     wp_update_post( array( 'ID' => $report_id, 'post_content' => "Manual introduction.\n" . get_post( $report_id )->post_content ) );
     slb_request( 'POST', $event_id, array( 'revision' => 2 ), true );
     slb_assert( str_contains( get_post( $report_id )->post_content, 'Manual introduction.' ), 'Report updates preserve manual content.' );
@@ -123,6 +131,8 @@ try {
     slb_request( 'POST', $event_id, array( 'revision' => 3 ), true );
     $heard_html = do_shortcode( get_post( $replacement_id )->post_content );
     slb_assert( substr_count( $heard_html, '✓ Heard' ) === 2 && substr_count( $heard_html, '✓ Seen' ) === 1 && str_contains( $heard_html, '2 recorded out of 4' ), 'Publish separate heard and seen columns without double-counting species.' );
+    $card_excerpt->context['postId'] = $replacement_id;
+    slb_assert( str_contains( SLB\TripBirdLists\listing_block( '', $card_excerpt ), '1 seen · 2 heard · 2 recorded' ), 'Card totals do not double-count birds that are seen and heard, including reports without a written summary.' );
     $heard_body['revision'] = 3;
     $heard_body['heard'] = array( 'invented' );
     slb_assert( slb_request( 'POST', $event_id, $heard_body )->get_status() === 400, 'Reject unknown heard species.' );

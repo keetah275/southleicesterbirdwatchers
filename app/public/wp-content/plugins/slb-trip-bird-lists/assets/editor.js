@@ -17,6 +17,7 @@
     let authExpired = false;
     let storageAvailable = true;
     let storageWarning = false;
+    let previewOpener;
     const storageKey = `slb-birds:${config.userId}:${config.eventId}`;
     const dirty = () => JSON.stringify(draft) !== JSON.stringify(server.draft) || server.revision === 0;
 
@@ -31,7 +32,7 @@
             <div class="slb-status-row"><strong id="slb-count"></strong><button id="slb-save" type="button" class="button">Save now</button></div>
             <p id="slb-status" role="status" aria-live="polite"></p>
             <p id="slb-login" hidden><a href="${escape(config.loginUrl)}" target="_blank" rel="noopener">Sign in in a new tab</a>, then return and reload this screen to recover pending changes.</p>
-            <button id="slb-jump-bottom" type="button" class="button slb-jump">↓ Report details</button>
+            <div class="slb-toolbar-actions"><button id="slb-review-report" type="button" class="button button-primary">Review &amp; publish report</button><button id="slb-jump-bottom" type="button" class="button">↓ Report details</button></div>
         </div>
         <label class="slb-filter"><input id="slb-seen-only" type="checkbox"> Show recorded birds only</label>
         <p id="slb-filter-status"></p>
@@ -48,11 +49,11 @@
         </section>
         <section id="slb-preview" class="slb-preview" hidden tabindex="-1" aria-label="Report preview">
             <h2>Preview trip report</h2><p>The public report always includes the full checklist, even when you are using a filter above.</p>
-            <div id="slb-preview-content"></div>
             <label id="slb-recover-label" class="slb-filter" hidden><input id="slb-recover" type="checkbox"> <span></span></label>
             <p id="slb-publish-status" role="status"></p>
             <button id="slb-publish" type="button" class="button button-primary">Publish trip report</button>
             <button id="slb-close-preview" type="button" class="button">Close preview</button>
+            <div id="slb-preview-content"></div>
         </section>`;
     const el = id => document.getElementById(`slb-${id}`);
     const setStatus = message => { if (el('status').textContent !== message) el('status').textContent = message; };
@@ -98,7 +99,8 @@
         el('count').textContent = `${selected.size} seen · ${heard.size} heard / ${draft.species.length} birds`;
         el('no-results').hidden = visible > 0;
         el('filter-status').textContent = query || onlySeen ? `Filtered view: ${visible} birds shown. The full report still includes every bird.` : `Full checklist: ${draft.species.length} birds.`;
-        for (const name of ['title', 'summary', 'preview-button']) el(name).disabled = Boolean(review || publishing);
+        for (const name of ['title', 'summary', 'preview-button', 'review-report']) el(name).disabled = Boolean(review || publishing);
+        el('review-report').textContent = server.published ? 'Review & update report' : 'Review & publish report';
         el('save').disabled = saving || publishing || Boolean(review) || authExpired || (!dirty());
         el('publish').disabled = saving || publishing || Boolean(review) || authExpired || dirty() || (needsRecovery() && !el('recover').checked);
         const changed = server.unpublishedChanges || dirty();
@@ -239,7 +241,8 @@
 
     function needsRecovery() { return ['trash','missing'].includes(server.reportStatus); }
 
-    function preview() {
+    function preview(event) {
+        previewOpener = event?.currentTarget || el('preview-button');
         const seen = new Set(draft.seen);
         const heard = new Set(draft.heard);
         const recorded = new Set([...seen,...heard]).size;
@@ -249,8 +252,8 @@
         el('recover-label').querySelector('span').textContent = server.reportStatus === 'trash' ? 'Restore the existing report from the bin and publish this version.' : 'The original report was deleted. Create a replacement report.';
         el('publish-status').textContent = dirty() ? 'Save your changes before publishing.' : 'Review the full checklist, then publish when ready.';
         el('preview').hidden = false;
-        el('preview').focus();
         refresh();
+        jumpTo(el('preview'), el('preview'));
     }
 
     async function publish() {
@@ -300,7 +303,8 @@
     el('jump-bottom').onclick = () => jumpTo(el('report-heading'), el('report-heading'));
     el('jump-top').onclick = () => jumpTo(el('birds'), el('birds').querySelector('.slb-bird:not([hidden]) input:not(:disabled)') || el('search'));
     el('preview-button').onclick = preview;
-    el('close-preview').onclick = () => { el('preview').hidden = true; el('preview-button').focus(); };
+    el('review-report').onclick = preview;
+    el('close-preview').onclick = () => { el('preview').hidden = true; previewOpener.focus(); };
     el('publish').onclick = publish;
     el('recover').onchange = refresh;
     window.addEventListener('online', () => { if (!review && !authExpired) save(); });

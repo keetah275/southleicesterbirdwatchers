@@ -1,0 +1,102 @@
+/* Scoped to the public Trip Lists page; shared by new reports and older PDFs. */
+.slb-trip-lists-page main .wp-block-query {
+    --slb-card-ink: #203d38;
+    --slb-card-line: #d9e2d8;
+    max-width: 1100px;
+    margin-inline: auto;
+}
+.slb-trip-lists-page main .wp-block-post-template {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding: 0;
+}
+.slb-trip-lists-page main .wp-block-post-template > .wp-block-post {
+    margin: 0;
+    min-width: 0;
+    border: 1px solid var(--slb-card-line);
+    border-top: 4px solid #dc9856;
+    border-radius: 12px;
+    background: #fffefa;
+    box-shadow: 0 4px 18px #203d3809;
+    overflow-wrap: anywhere;
+}
+.slb-trip-lists-page main .wp-block-post-template > .wp-block-post > .wp-block-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    height: 100%;
+    padding: 28px !important;
+    box-sizing: border-box;
+}
+.slb-trip-lists-page main .wp-block-post-template .wp-block-post-title {
+    margin: 0;
+    max-width: none;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    line-height: 1.25;
+    font-weight: 500;
+    letter-spacing: -.025em;
+}
+.slb-trip-lists-page main .wp-block-post-template > .wp-block-post > .wp-block-group > * {
+    margin-inline: 0 !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+.slb-trip-lists-page main .wp-block-post-title a {
+    color: var(--slb-card-ink);
+    text-decoration: none;
+}
+.slb-trip-lists-page main .wp-block-post-title a:hover {
+    text-decoration: underline;
+    text-underline-offset: .15em;
+}
+.slb-trip-lists-page main .wp-block-post-template .wp-block-post-date {
+    order: -1;
+    margin: 0;
+    color: #526456;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+.slb-trip-lists-page main .wp-block-post-template .wp-block-post-excerpt {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 18px;
+    margin: 0;
+    max-width: none;
+    color: #46564b;
+    font-size: .95rem;
+    line-height: 1.65;
+}
+.slb-trip-lists-page main .wp-block-post-excerpt p { margin: 0; }
+.slb-trip-lists-page main .slb-trip-card-totals {
+    padding: 12px 14px;
+    border: 1px solid #dce6da;
+    border-radius: 7px;
+    background: #eef3ed;
+    color: #294d3b;
+    font-size: .8rem;
+}
+.slb-trip-lists-page main .slb-trip-card-link { margin-top: auto !important; padding-top: 6px; }
+.slb-trip-lists-page main .slb-trip-card-link a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 6px;
+    background: #254d3d;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+.slb-trip-lists-page main .slb-trip-card-link a:hover { background: #18392c; }
+.slb-trip-lists-page main .wp-block-query a:focus-visible { outline: 3px solid #bd722d; outline-offset: 4px; }
+@media (max-width: 760px) {
+    .slb-trip-lists-page main .wp-block-post-template { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .slb-trip-lists-page main .wp-block-post-template > .wp-block-post > .wp-block-group { padding: 22px !important; }
+}

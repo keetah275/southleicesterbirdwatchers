@@ -2,7 +2,7 @@
 Contributors: southleicesterbirdwatchers
 Requires at least: 6.5
 Requires PHP: 8.0
-Stable tag: 0.1.6
+Stable tag: 0.1.9
 License: GPLv2 or later
 
 Record a full bird checklist against a trip event and publish an HTML trip report.
@@ -33,6 +33,9 @@ recorded birds, whether seen or heard.
 
 Use Report details in the sticky toolbar to jump past the checklist, and Back
 to checklist to return to its start.
+Use Review & publish report (or Review & update report) in the sticky toolbar
+to open the preview directly. Publication controls appear above the full bird
+list so there is no need to scroll through it to publish or update.
 
 Only administrators can manage lists. The editor works on phones and saves
 automatically while connected. Search and the recorded-only filter affect the
@@ -48,6 +51,13 @@ pending edits. Conflicting saves are reviewed rather than silently overwriting
 another screen's changes. Applying your edits preserves unrelated server edits.
 
 == Reports and data ==
+
+On the existing Trip Lists page (trip-lists), linked report cards use the event
+date instead of the date the post was added. They show Seen/Heard/unique recorded
+totals and up to 45 words of the published trip summary, with a link to the full
+list. Unpublished working edits never appear in these cards. Older PDF posts
+keep their existing excerpts and dates. The page must retain its Post Excerpt
+and Post Date blocks within the query loop. Ordering remains by post date.
 
 Draft saves do not change published reports. Preview and publish/update the
 report explicitly. Repeated publication reuses the associated post. Trashed
@@ -72,6 +82,18 @@ Trip-specific X marks are not imported. Database tables and settings are local
 to each WordPress installation; deployment does not copy development sightings.
 
 == Changelog ==
+
+= 0.1.9 =
+Style the Trip Lists page with responsive cards, prominent dates, summary totals
+and full-report buttons. Apply matching cards to older PDF entries.
+
+= 0.1.8 =
+On the Trip Lists page, show linked reports' event dates and published summary
+with Seen, Heard and unique recorded totals. Older posts retain their display.
+
+= 0.1.7 =
+Add a sticky toolbar shortcut to review and publish/update the report. Move
+publication controls above the full preview checklist.
 
 = 0.1.6 =
 Add a prominent dashboard widget for Saturday trips occurring today or in the

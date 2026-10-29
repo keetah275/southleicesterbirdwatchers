@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SLB Trip Bird Lists
  * Description: Record a complete bird checklist against an event and publish a linked trip report.
- * Version: 0.1.6
+ * Version: 0.1.9
  * Requires at least: 6.5
  * Requires PHP: 8.0
  * Author: South Leicester Birdwatchers
@@ -13,7 +13,7 @@ namespace SLB\TripBirdLists;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.6';
+const VERSION = '0.1.9';
 const MASTER_OPTION = 'slb_bird_list_master';
 const CATEGORY_OPTION = 'slb_bird_list_category';
 
@@ -320,9 +320,19 @@ add_shortcode( 'slb_trip_report', function ( $attrs ) {
 } );
 
 add_action( 'wp_enqueue_scripts', function () {
+    if ( is_page( 'trip-lists' ) ) {
+        wp_enqueue_style( 'slb-trip-list-cards', plugins_url( 'assets/listing.css', __FILE__ ), array(), VERSION );
+    }
     if ( is_singular( 'post' ) && has_shortcode( get_post()->post_content, 'slb_trip_report' ) ) {
         wp_enqueue_style( 'slb-bird-report', plugins_url( 'assets/report.css', __FILE__ ), array(), VERSION );
     }
+} );
+
+add_filter( 'body_class', function ( $classes ) {
+    if ( is_page( 'trip-lists' ) ) {
+        $classes[] = 'slb-trip-lists-page';
+    }
+    return $classes;
 } );
 
 add_filter( 'the_content', function ( $content ) {
@@ -334,5 +344,45 @@ add_filter( 'the_content', function ( $content ) {
     }
     return $content;
 } );
+
+/** Use published checklist data for report cards, without exposing working edits. */
+function listing_block( $html, $block ) {
+    $post_id = (int) ( $block->context['postId'] ?? 0 );
+    $event_id = (int) get_post_meta( $post_id, '_slb_trip_event', true );
+    $record = $event_id ? row( $event_id ) : null;
+    if ( ! $record || (int) $record->report_id !== $post_id || ! $record->published ) {
+        return $html;
+    }
+    $snapshot = json_decode( $record->published, true );
+    if ( ! is_array( $snapshot ) ) {
+        return $html;
+    }
+    if ( $block->name === 'core/post-date' ) {
+        $date = get_post_meta( $event_id, '_EventStartDate', true );
+        if ( ! $date ) {
+            return $html;
+        }
+        $time = 'Trip date: <time datetime="' . esc_attr( mysql2date( 'Y-m-d', $date, false ) ) . '">' . esc_html( event_date( $event_id ) ) . '</time>';
+        return preg_replace_callback( '/<time\b[^>]*>.*?<\/time>/s', function () use ( $time ) { return $time; }, $html, 1 );
+    }
+    if ( $block->name === 'core/post-excerpt' ) {
+        $seen = array_unique( $snapshot['seen'] ?? array() );
+        $heard = array_unique( $snapshot['heard'] ?? array() );
+        $total = count( array_unique( array_merge( $seen, $heard ) ) );
+        $html = '<div class="wp-block-post-excerpt slb-trip-card-summary"><p class="slb-trip-card-totals"><strong>' .
+            count( $seen ) . ' seen · ' . count( $heard ) . ' heard · ' . $total . ' recorded</strong></p>';
+        if ( ! empty( $snapshot['summary'] ) ) {
+            $html .= '<p>' . esc_html( wp_trim_words( $snapshot['summary'], 45 ) ) . '</p>';
+        }
+        return $html . '<p class="slb-trip-card-link"><a href="' . esc_url( get_permalink( $post_id ) ) . '">View full trip list <span aria-hidden="true">↗</span></a></p></div>';
+    }
+    return $html;
+}
+
+foreach ( array( 'core/post-date', 'core/post-excerpt' ) as $listing_block_name ) {
+    add_filter( 'render_block_' . $listing_block_name, function ( $html, $parsed, $block ) {
+        return ! is_admin() && is_page( 'trip-lists' ) ? listing_block( $html, $block ) : $html;
+    }, 10, 3 );
+}
 
 require_once __DIR__ . '/includes-admin.php';

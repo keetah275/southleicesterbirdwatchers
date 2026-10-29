@@ -1,6 +1,6 @@
 # Trip bird lists validation
 
-Validated locally on 28–29 October 2026 through version 0.1.6.
+Validated locally on 28–29 October 2026 through version 0.1.9.
 
 - PHP syntax checks passed for the plugin and test helpers.
 - JavaScript syntax checks passed; Git whitespace checks passed.
@@ -46,3 +46,67 @@ offline access is outside version 0.1.0; recovery supports short interruptions
 and depends on the same browser retaining pending edits.
 
 See [test and packaging instructions](../scripts/trip-bird-lists/README.md).
+
+## Intermittent search reset investigation — 29 October 2026
+
+The reported reset has not yet been reproduced. Added browser regression checks
+that search text and results survive selecting a bird and autosaving, and that a
+delayed response from an earlier selection preserves a newer search, keyboard
+focus, and cursor selection. The simulated-API suite passes with these checks.
+A 390px touch-enabled Chrome check inside the local WordPress admin also kept
+the search and control positions unchanged through selecting Wren and saving.
+Its temporary test records and account were removed afterwards.
+
+No plugin behaviour or release version was changed. These checks do not emulate
+a physical phone's on-screen keyboard. Device/browser details and whether the
+search text clears or only the view moves are still needed to narrow the issue.
+
+Follow-up: the user confirmed a computer and results disappearing on selection.
+Additional cases cover selecting while an earlier save is pending and the
+recorded-only filter. That filter intentionally hides a bird when its final
+Seen/Heard record is unticked; disabling it restores the matching result. This
+has not been confirmed as the user's cause. The suite can also run at desktop
+width using `SLB_TEST_WIDTH=1280`.
+
+## Report publication shortcut — version 0.1.7
+
+The sticky toolbar now opens the full report preview directly, with labels for
+initial publication and updating an existing report. Publication and recovery
+controls appear before the preview checklist. Closing returns keyboard focus
+to the control that opened the preview. Existing save/publication guards remain.
+
+The Chrome simulated-API suite passed at 320px and 1280px, including preview
+position below the sticky toolbar, publication button within the viewport,
+published-state labels, focus return, and the existing saving/publication cases.
+JavaScript syntax, PHP lint, whitespace checks and release ZIP integrity passed.
+The installable package is `dist/slb-trip-bird-lists-0.1.7.zip`; no production
+deployment was performed.
+
+## Trip Lists report cards — version 0.1.8
+
+The existing `/trip-lists/` query loop's Post Excerpt and Post Date blocks now
+show linked reports' published summary (up to 45 words), Seen/Heard/unique
+recorded totals, a full-report link, and the associated event date. This is a
+plugin rendering change and needs no production page/database migration. Other
+pages and older unlinked PDF posts retain their existing output. Ordering is
+still the page's publication-date order.
+
+46 local WordPress integration checks passed, including event dates, published
+summaries, draft privacy, older-post fallback and unique recorded totals.
+The real WordPress Chrome suite passed with assertions on the anonymous list
+page's card content and date, mobile overflow, and existing report lifecycle
+checks. Screenshots: `/private/tmp/slb-trip-lists-cards-mobile.png` and
+`/private/tmp/slb-trip-lists-cards-desktop.png`. Temporary fixtures were removed.
+PHP/JavaScript syntax, whitespace and release ZIP checks passed. The installable
+package is `dist/slb-trip-bird-lists-0.1.8.zip`; live configuration was not changed.
+
+## Trip Lists card styling — version 0.1.9
+
+Added a stylesheet scoped to the public Trip Lists page, packaged with the
+plugin. Cards use cream backgrounds, orange top borders, green summary panels
+and full-report buttons. Dates appear above titles. The layout uses two columns
+on desktop and one below 760px; older PDF entries share the card styling.
+Chrome checks at 1280px, 390px and 320px found no horizontal overflow and
+confirmed 44px full-report buttons. Desktop and mobile screenshots were visually
+reviewed during development. PHP lint, whitespace and release ZIP checks passed.
+The package is `dist/slb-trip-bird-lists-0.1.9.zip`. No live deployment was made.

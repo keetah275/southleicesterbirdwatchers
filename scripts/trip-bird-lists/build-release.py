@@ -9,7 +9,7 @@ plugin = root / 'app/public/wp-content/plugins/slb-trip-bird-lists'
 version = re.search(r'\* Version: ([0-9.]+)', (plugin / 'slb-trip-bird-lists.php').read_text()).group(1)
 files = [
     'slb-trip-bird-lists.php', 'includes-admin.php', 'readme.txt',
-    'assets/editor.js', 'assets/editor.css', 'assets/report.css',
+    'assets/editor.js', 'assets/editor.css', 'assets/report.css', 'assets/listing.css',
     'data/master-birds.txt',
 ]
 destination = root / 'dist' / f'slb-trip-bird-lists-{version}.zip'

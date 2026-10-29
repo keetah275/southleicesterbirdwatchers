@@ -11,7 +11,7 @@
 .slb-search-row .button, .slb-status-row .button { flex: 0 0 auto; }
 .slb-status-row { justify-content: space-between; margin-top: 10px; }
 .slb-toolbar p { margin: 8px 0 0; }
-.slb-toolbar .slb-jump { margin-top: 10px; }
+.slb-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .slb-filter { display: flex; gap: 10px; align-items: center; min-height: 48px; margin-block: 10px; }
 .slb-app input[type="checkbox"] { width: 24px; height: 24px; flex: 0 0 24px; margin: 0; }
 .slb-app input[type="checkbox"]:checked::before { width: 28px; height: 28px; margin: -3px -4px; }

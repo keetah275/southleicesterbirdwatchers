@@ -11,7 +11,8 @@ const plugin = path.join(base, 'app/public/wp-content/plugins/slb-trip-bird-list
 const js = await readFile(path.join(plugin, 'assets/editor.js'), 'utf8');
 const css = await readFile(path.join(plugin, 'assets/editor.css'), 'utf8');
 const browser = await chromium.launch({executablePath:process.env.SLB_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true});
-const context = await browser.newContext({viewport:{width:320,height:740}});
+const testWidth = Number(process.env.SLB_TEST_WIDTH || 320);
+const context = await browser.newContext({viewport:{width:testWidth,height:740}});
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
@@ -61,7 +62,7 @@ async function reload() {
 try {
     await page.goto('http://slb-test.invalid/admin/');
     assert.equal(await page.locator('.slb-bird').count(), 60);
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'No horizontal overflow at 320px');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `No horizontal overflow at ${testWidth}px`);
     assert.equal(await page.locator('.slb-bird').first().evaluate(el => el.getBoundingClientRect().height >= 44), true);
     await page.locator('#slb-jump-bottom').click();
     assert.equal(await page.locator('#slb-report-heading').evaluate(el => document.activeElement === el), true);
@@ -84,6 +85,51 @@ try {
     await page.locator('.slb-bird:visible input[data-kind="seen"]').check();
     await waitForSaved();
     assert.equal(server.draft.seen.length, 2, 'Search preserves earlier selections');
+    assert.equal(await page.locator('#slb-search').inputValue(), 'Wren', 'Autosave keeps the search text');
+    assert.equal(await page.locator('.slb-bird:visible').count(), 1, 'Autosave keeps the search results');
+
+    // A previous selection may still be saving while the next search is typed.
+    saveGate = Promise.withResolvers();
+    const searchSave = page.waitForRequest(request => request.url().endsWith('/api/trip') && request.method() === 'POST');
+    await page.locator('.slb-bird:visible input[data-kind="heard"]').check();
+    await searchSave;
+    await page.locator('#slb-search').fill('Test bird');
+    await page.locator('#slb-search').evaluate(input => input.setSelectionRange(2, 5));
+    saveGate.resolve();
+    saveGate = null;
+    await waitForSaved();
+    assert.equal(await page.locator('#slb-search').inputValue(), 'Test bird', 'An older save cannot reset a newer search');
+    assert.equal(await page.locator('#slb-search').evaluate(input => document.activeElement === input), true, 'Save completion keeps search focus');
+    assert.deepEqual(await page.locator('#slb-search').evaluate(input => [input.selectionStart, input.selectionEnd]), [2, 5], 'Save completion keeps the search cursor selection');
+    assert.equal(await page.locator('.slb-bird:visible').count(), 58, 'Save completion keeps the newer results');
+    await page.locator('#slb-search').fill('Wren');
+    // Keep the matching row mounted while selecting during an earlier save.
+    saveGate = Promise.withResolvers();
+    const selectionSave = page.waitForRequest(request => request.url().endsWith('/api/trip') && request.method() === 'POST');
+    await page.locator('.slb-bird:visible input[data-kind="heard"]').uncheck();
+    await selectionSave;
+    await page.locator('.slb-bird:visible input[data-kind="seen"]').uncheck();
+    assert.equal(await page.locator('.slb-bird:visible').count(), 1, 'Unrecorded search result remains visible during saving');
+    saveGate.resolve();
+    saveGate = null;
+    await waitForSaved();
+    assert.equal(await page.locator('#slb-search').inputValue(), 'Wren');
+    assert.equal(await page.locator('.slb-bird:visible').count(), 1, 'Queued save cannot hide the matching bird');
+    assert.equal(await page.locator('.slb-bird:visible input[data-kind="seen"]').isChecked(), false);
+    await page.locator('.slb-bird:visible input[data-kind="seen"]').check();
+    await waitForSaved();
+
+    // The recorded-only filter intentionally hides the last unchecked record.
+    await page.locator('#slb-seen-only').check();
+    await page.locator('.slb-bird:visible input[data-kind="seen"]').uncheck();
+    assert.equal(await page.locator('.slb-bird:visible').count(), 0);
+    assert.equal(await page.locator('#slb-no-results').isVisible(), true);
+    assert.equal(await page.locator('#slb-search').inputValue(), 'Wren', 'Recorded-only filtering does not clear search');
+    await waitForSaved();
+    await page.locator('#slb-seen-only').uncheck();
+    assert.equal(await page.locator('.slb-bird:visible').count(), 1, 'Turning off recorded-only restores the search result');
+    await page.locator('.slb-bird:visible input[data-kind="seen"]').check();
+    await waitForSaved();
     await page.locator('#slb-clear').click();
 
     // Edits while a save is in flight must be sent in a subsequent revision.
@@ -122,18 +168,23 @@ try {
     assert(server.draft.heard.includes('bird-10') && server.draft.heard.includes('bird-9'), 'Merge preserves remote and local heard selections');
 
     await page.locator('#slb-seen-only').check();
-    await page.locator('#slb-preview-button').click();
+    await page.locator('#slb-review-report').click();
+    assert.equal(await page.locator('#slb-preview').evaluate(el => document.activeElement === el), true);
+    assert.equal(await page.locator('#slb-preview').evaluate(el => el.getBoundingClientRect().top >= document.querySelector('.slb-toolbar').getBoundingClientRect().bottom), true, 'Preview clears the sticky toolbar');
+    assert.equal(await page.locator('#slb-publish').evaluate(el => el.getBoundingClientRect().bottom <= innerHeight), true, 'Publish control is reachable without scrolling through the preview');
     assert.equal(await page.locator('#slb-preview-content tbody tr').count(), 60, 'Preview always includes every bird');
     assert.equal(await page.locator('#slb-preview-content tbody td:nth-child(3)').filter({hasText:'✓ Heard'}).count(), 4);
     await page.locator('#slb-publish').click();
     await page.waitForFunction(() => document.getElementById('slb-publish-status').textContent.includes('successfully'));
     assert.equal(publishCalls, 1);
     assert.equal(server.reportId, 42);
+    assert.equal(await page.locator('#slb-review-report').textContent(), 'Review & update report');
     await page.locator('#slb-publish').click();
     await page.waitForFunction(() => document.getElementById('slb-publish-status').textContent.includes('successfully'));
     assert.equal(server.reportId, 42, 'Same associated report on subsequent publish');
 
     await page.locator('#slb-close-preview').click();
+    assert.equal(await page.locator('#slb-review-report').evaluate(el => document.activeElement === el), true, 'Closing preview returns to its toolbar shortcut');
     await page.locator('#slb-clear').click();
     await page.locator('.slb-bird input[data-kind="seen"]').nth(6).check();
     await waitForSaved();
